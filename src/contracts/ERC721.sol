@@ -18,12 +18,13 @@ contract ERC721 {
     );
     //mapping in solidity creates a hash table of key pair values
     //mapping from token id to the owner
-    mapping(uint => address) private _tokenOwner;
+    mapping(uint256 => address) private _tokenOwner;
 
     //mapping from owner to number of owned tokens
     mapping(address => uint) private _OwnedTokensCount;
 
-
+    //mapping from token id to approved addresses
+    mapping(uint256 => address) private _tokenApprovals;
 
     //to get the balance:
     //b1 = await kryptoBird.balanceOf('address')
@@ -33,7 +34,7 @@ contract ERC721 {
         return _OwnedTokensCount[owner];
     }
 
-    function ownerOf(uint256 _tokenId) external view returns (address){
+    function ownerOf(uint256 _tokenId) public view returns (address){
         address owner = _tokenOwner[_tokenId];
         require(owner != address(0), "Error ownerOf - owner address is a 0 address");
         return owner;
@@ -58,6 +59,27 @@ contract ERC721 {
         emit Transfer(address(0), to, tokenId);
     }
 
+    function _transferFrom(address _from,address _to, uint256 _tokenId) internal {
+        //safe functionality
+        //a. require that the address receiving a token is not a zero address
+        require(_to != address(0), 'Error - _to address is a 0 address');
+        //b. require the address transfering the token actually owns the token
+        require(ownerOf(_tokenId) == _from, 'Error - _from address doesnt own the token');
+      
+     
+        //2. update the balance of the address from token
+        _OwnedTokensCount[_from]-=1;
+        //3. update the balance of the address to
+        _OwnedTokensCount[_to]+=1;
+        //1. add the token id to the address receiving the token
+        _tokenOwner[_tokenId] = _to;
+
+        emit Transfer(_from, _to, _tokenId);
+    }
+
+    function transferFrom(address _from,address _to,uint256 _tokenId) public {
+        _transferFrom( _from, _to, _tokenId);
+    }
 
 
     }
