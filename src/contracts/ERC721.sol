@@ -23,12 +23,29 @@ contract ERC721 {
     //mapping from owner to number of owned tokens
     mapping(address => uint) private _OwnedTokensCount;
 
+
+
+    //to get the balance:
+    //b1 = await kryptoBird.balanceOf('address')
+    //b1.words[0]
+    function balanceOf(address owner) public view returns (uint256){
+        require(owner != address(0), "Error balanceOf - owner address is a 0 address");
+        return _OwnedTokensCount[owner];
+    }
+
+    function ownerOf(uint256 _tokenId) external view returns (address){
+        address owner = _tokenOwner[_tokenId];
+        require(owner != address(0), "Error ownerOf - owner address is a 0 address");
+        return owner;
+    }
+
     function _exists(uint256 tokenId) internal view returns (bool){
         address owner = _tokenOwner[tokenId];
         return owner != address(0); //check if the address is not 0
     }
 
-    function _mint (address to, uint256 tokenId) internal {
+    //virtual because we override this function in de ERC721Enumerable contract
+    function _mint (address to, uint256 tokenId) internal virtual {
         // requires that the address isn't zero
         require(to != address(0), "ERC721: minting to the zero address");
         // requires that the token does not already exists
