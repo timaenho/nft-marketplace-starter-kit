@@ -1,5 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
+
+import './interfaces/IERC721.sol';
+import './ERC165.sol';
     /*
     building out the minting function:
         a. nft to point to an address
@@ -9,13 +12,9 @@ pragma solidity ^0.8.0;
         e. create an event that emits a transfer log - contract address, where it is being minted to, id
     */
 
-contract ERC721 {
+contract ERC721 is ERC165, IERC721 {
     //to see logs in the console
-    event Transfer (
-        address indexed from,
-        address indexed to,
-        uint256 indexed tokenId
-    );
+
     //mapping in solidity creates a hash table of key pair values
     //mapping from token id to the owner
     mapping(uint256 => address) private _tokenOwner;
@@ -29,12 +28,12 @@ contract ERC721 {
     //to get the balance:
     //b1 = await kryptoBird.balanceOf('address')
     //b1.words[0]
-    function balanceOf(address owner) public view returns (uint256){
-        require(owner != address(0), "Error balanceOf - owner address is a 0 address");
-        return _OwnedTokensCount[owner];
+    function balanceOf(address _owner) public override view returns (uint256){
+        require(_owner != address(0), "Error balanceOf - owner address is a 0 address");
+        return _OwnedTokensCount[_owner];
     }
 
-    function ownerOf(uint256 _tokenId) public view returns (address){
+    function ownerOf(uint256 _tokenId) public override view returns (address){
         address owner = _tokenOwner[_tokenId];
         require(owner != address(0), "Error ownerOf - owner address is a 0 address");
         return owner;
@@ -77,9 +76,29 @@ contract ERC721 {
         emit Transfer(_from, _to, _tokenId);
     }
 
-    function transferFrom(address _from,address _to,uint256 _tokenId) public {
+    function transferFrom(address _from,address _to,uint256 _tokenId) override public {
+        require(isApprovedOrOwner(msg.sender, _tokenId));
         _transferFrom( _from, _to, _tokenId);
+
     }
 
+    // require that the person approving is the owner
+    // we are approving an address to a token (tokenId)
+    // require that we cant approve sending tokens of the owner to the owner (current caller)
+    // update the map of the approval addresses
+    function approve(address _to, uint256 tokenId)public {
+        address owner = ownerOf(tokenId);
+        require(_to != owner, 'Error - approval to current owner');
+        require(msg.sender == owner,'Current caller is not the owner');
+        _tokenApprovals[tokenId] = _to;
+        emit Approval(owner, _to, tokenId);
+    }
+
+    function isApprovedOrOwner (address spender, uint256 tokenId) internal view returns (bool){
+        require(_exists(tokenId),'token does not exists');
+        address owner = ownerOf(tokenId);
+        return(spender == owner);
+    }
+   
 
     }
