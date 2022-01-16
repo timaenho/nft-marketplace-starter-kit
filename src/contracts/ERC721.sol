@@ -28,6 +28,23 @@ contract ERC721 is ERC165, IERC721 {
     //to get the balance:
     //b1 = await kryptoBird.balanceOf('address')
     //b1.words[0]
+
+    //EXERCISE 1 REGISTER THE INTERFACE FOR THE ERC721 SO THAT IS INCLUDES
+    //THE FOLLOWING FUNCTIONS: BALANCEOF/OWNEROF/TRANSFERFROM
+    // write the constructors with the according byte conversions
+    
+    //EXERCISE 2 REGISTER THE INTERFACE FOR THE ERC721Enumerable contract
+    //so that it includes totalSupply/tokenByIndex, tokenOfOwnerByIndex
+
+    //EXERCISE 3 Register the interface for the ERC721Metadata contract
+    //incluces: name, symbol
+    
+    constructor () {
+        _registerInterface(bytes4(keccak256('balanceOf(bytes4)')^
+        keccak256('ownerOf(bytes4)')^
+        keccak256('transferFrom(bytes4)')));
+    }
+
     function balanceOf(address _owner) public override view returns (uint256){
         require(_owner != address(0), "Error balanceOf - owner address is a 0 address");
         return _OwnedTokensCount[_owner];
