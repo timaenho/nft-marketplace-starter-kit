@@ -23,6 +23,18 @@ contract ('KryptoBird', (accounts) => {
             assert.notEqual(address, undefined)
             assert.notEqual(address, 0x0)
         })
+        it('name contract matches', async()=>{
+            const name = await contract.name()
+            assert.equal(name, 'KryptoBird')
+        })
+        it('name symbol matches', async()=>{
+            const symbol = await contract.symbol()
+            assert.equal(symbol, 'KBIRDZ')
+        })
 
     })
+
+    //test that the name matches on our contract using assert.equal function
+    //test that the symbol matches with the assert.equal
+    //
 })
