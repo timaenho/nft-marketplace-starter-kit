@@ -16,7 +16,10 @@ class App extends Component {
         super(props)
         this.state = {
             account: '',
-            contract: null
+            contract: null,
+            totalSupply: 0,
+            kryptoBirdz: []
+
         }
     }
     // first up is to detect ethereum provider
@@ -47,13 +50,31 @@ class App extends Component {
             const abi = KryptoBird.abi
             const address = networkData.address
             const contract = new web3.eth.Contract(abi, address)
-            console.log(contract)
+            this.setState({contract: contract})
+          
 
-           
+            // call the total supply of our KryptoBirdz
+            // grab the total supply on the front end and log the results
+            // go to web3 doc and read up on methods and call
+            const totalSupply = await contract.methods.totalSupply().call()
+            this.setState({totalSupply: totalSupply})
+
+            //load KryptoBirdz for us
+            for(let i = 0; i < totalSupply; i++) {
+                const KryptoBird = await contract.methods.kryptoBirdz(i).call()
+                //how should we handle the state ont the front end?
+                this.setState({
+                    kryptoBirdz: [...this.state.kryptoBirdz, KryptoBird]
+                })   
+            }
+                    console.log(this.state.kryptoBirdz) 
+        // error handling         
         }else{
-            console.log('no networkdata detected')
+            window.alert('Smart contract not deployed')
         }
     }
+
+    // with minting we are sending information and we need to specify the account 
 
     render () {
         return (
