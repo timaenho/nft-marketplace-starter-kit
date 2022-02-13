@@ -1,0 +1,16 @@
+.token {
+    width:300px;
+    box-shadow: 0 8px 16px(5,5,5,0.3);
+    padding: 2px 16px;
+    margin: 16px;
+    border-radius: 8px;
+}
+
+img {
+    border: .3px rgba(#e0e0e0);
+    box-shadow: 10px 10px 8px rgba(#1111);
+    border-radius: 4px;
+    padding: 5px;
+    width: 150px;
+    margin-top: 10px;
+}
